@@ -1,0 +1,7 @@
+NAME: Jake Herron
+EMAIL: jakeh524@gmail.com
+ID: 005113997
+
+The first file contained in this submission is the lab1a.c file which is the C source module for this assignment that effectively creates a bash shell program by splitting an existing process. It also introduces input/output piping and inter-process communication through functions like pipe() and poll(). It implements a full duplex terminal I/O and a polled I/O that passes input and output between two processes.
+The next file contained in this submission is the Makefile which takes care of building and compiling the C program. It also has a clean option to remove items generated during compilation and a dist option to compress a tar for submission.
+Finally, the last file is the README which is this file and contains information about the submission.

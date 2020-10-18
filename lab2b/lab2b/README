@@ -1,0 +1,72 @@
+NAME: Jake Herron
+EMAIL: jakeh524@gmail.com
+ID: 005113997
+
+File Descriptions:
+SortedList.h is the header file for the interfaces for the sorted linked list.
+SortedList.c is the C file for the implementations for the sorted linked list.
+lab2_list.c is the c file for the multi-threaded program that manages a linked list and has options like sync, yield, threads, iterations, and lists.
+Makefile is the file that builds the program and has options like default, tests, profile, graphs, dist, and clean.
+lab2b_list.csv contains all of the data from the tests.
+profile.out is the execution profiling report to show where we spent most of our time during spin-lock tests.
+lab2b_1.png is the graph showing the throughput vs the number of threads for both mutex and spin lock for only one list.
+lab2b_2.png is the graph showing the average mutex lock wait time and average operation time for a mutex run.
+lab2b_3.png is the graph showing successful iterations vs number of threads for the sync options.
+lab2b_4.png is the graph showing throughput vs number of threads for different number of sublists for mutexes
+lab2b_5.png is the graph showing throughput vs number of threads for different number of sublists for spin locks
+lab2_list.gp is the file used to construct all of the graphs using the csv data.
+README is this file containing the descriptions of each file and the answers to all of the questions.
+
+Questions:
+
+Question 2.3.1
+
+Where do you believe most of the cycles are spent in the 1 and 2-thread list tests ?
+    Operating on the lists with insert, lookup, length, and delete would take up most of the time in the 1 and 2 thread list tests.
+
+Why do you believe these to be the most expensive parts of the code?
+    This would be the most expensive parts of the code for these tests because there is very little if any time waiting for the locks as a thread does not have to wait long for the other thread to be done (if there is another thread) before entering the critical section. Parallelism and synchronization is not as pertinent in these tests that only use a small number of threads.
+
+Where do you believe most of the time/cycles are being spent in the high-thread spin-lock tests?
+    Most of the time is probably being spent spinning waiting for the lock in the high-thread spin lock tests. This is because, when one thread is running, the majority of other threads are stuck spinning at the spin lock waiting for the running thread to complete so the next one can take its turn.
+
+Where do you believe most of the time/cycles are being spent in the high-thread mutex tests?
+    Cycles aren't being spent waiting for mutex locks because these threads are blocked when they encounter a mutex. They are blocked which does not consume cylces instead of spinning like in a spin lock which consumes CPU cycles. This time might be spent actually operating the mutex lock and unlock operations because these are expensive operations as mentioned in lecture.
+
+Question 2.3.2
+
+Where (what lines of code) are consuming most of the cycles when the spin-lock version of the list exerciser is run with a large number of threads?
+    The lines of code that are consuming most of the sycles are:
+    while(__sync_lock_test_and_set(&spin_lock, 1));
+    
+    Or also the following are the same lines after I updates my code for partitioned lists:
+    while(__sync_lock_test_and_set(&spin_locks[hash], 1));
+    while(__sync_lock_test_and_set(&spin_locks[j], 1));
+    
+
+Why does this operation become so expensive with large numbers of threads?
+    This operation is expensive with a large number of threads because, for example, in this profiling test with 12 threads there is only one thread actually executing the critical section while the other 11 are stuck waiting at these lines of code spinning and waiting for their turn to run the critical section. All 12 threads are competing for this one spin lock and using up a lot of CPU time waiting at these spin lock statements.
+
+Question 2.3.3
+
+Look at the average time per operation (vs. # threads) and the average wait-for-mutex time (vs. #threads).
+Why does the average lock-wait time rise so dramatically with the number of contending threads?
+    The average lock-wait time rises so dramatically when the number of threads increases because there are many more threads competing for this one lock. When there is a small number of threads there is a small number waiting at the lock for their turn to run the critical section, but when there are more threads, there are more threads that end up waiting for their turn. There is thus more competition for this one lock resource.
+
+Why does the completion time per operation rise (less dramatically) with the number of contending threads?
+    The completion time per operations rises less dramatically when the number of threads increases because at least one thread is always running whether it is in the critical section or running elsewhere. There may be a lot of threads waiting for the lock but there will always be at lease one making some progress somewhere.
+
+How is it possible for the wait time per operation to go up faster (or higher) than the completion time per operation?
+    The timers are thread-independent meaning each thread is keeping track of their own time, so that means that there can be multiple threads waiting at the same time while only one thread is actually performing operations. Multiple threads are not performing operations in the critical section at the same time, but there are multiple threads waiting for the lock at the same time so the wait time will thus go up higher than the completion time per operation.
+
+Question 2.3.4
+
+Explain the change in performance of the synchronized methods as a function of the number of lists.
+    As you increase the number of sublists that you divide the elements into, the throughput will also increase. Thus this is a positive linear function.
+
+Should the throughput continue increasing as the number of lists is further increased? If not, explain why not.
+    When you increase the number of sublists, the througput will also continue to increase until it reaches a plateau. This plateau is the point where you cannot divide the list into any more sublists meaning that each sublist is only one element long. This also means that there are as many locks. Thus all threads can run in parallel and will never have to wait for a lock. You cannot increase the number of sublists anymore because you cannot split an element in half or put it in two lists so the throughput will thus max out and plateau.
+
+It seems reasonable to suggest the throughput of an N-way partitioned list should be equivalent to the throughput of a single list with fewer (1/N) threads. Does this appear to be true in the above curves? If not, explain why not.
+    This assumption that the throughput of an N-way partitioned list is equivalent to the throughput of a single list with fewer 1/N threads is reasonable. It is reasonable as shown by the graphs as each element has a key that will be in a different sublist and each thread will get one of those M sublists at a time. Thus each thread will have to perform 1/N less operations and have that much less overhead. The plots appear to support this as both cases have a similar pattern. Each thread will have to do 1/N less work which is the equivalent of having 1/N fewer threads.
+

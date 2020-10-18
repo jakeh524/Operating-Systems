@@ -1,0 +1,8 @@
+NAME: Jake Herron
+EMAIL: jakeh524@gmail.com
+ID: 005113997
+
+File Descriptions:
+lab3b.py is the Python program that takes in a csv file that summarizes an EXT2 file system and then checks for inconsistencies in the inode, block, and directory entries.
+Makefile is the file used to build the program. It contains default, clean, and dist targets.
+README is this file which contains the author info and the file descriptions.

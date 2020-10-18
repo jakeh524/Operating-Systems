@@ -1,0 +1,15 @@
+NAME: Jake Herron
+EMAIL: jakeh524@gmail.com
+ID: 005113997
+
+S/N: BBGW19010134
+MAC: 2CF7F106A085
+
+The files in this submission are:
+the selfie showing that I have the beaglebone
+the connected screenshot showing that I have connected to the Beaglebone, given it a name, and allowed network connections
+the copy screenshot showing me copying a hello world C file from my local machine to the Beaglebone
+the build_run screenshot showing me compiling and running this hello world file
+the git screenshot showing me installing git and cloning a git repo
+the Makefile which makes this tarball
+and this README which contains necessary info and descriptions.

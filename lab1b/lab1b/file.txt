@@ -1,0 +1,31 @@
+SENT 1 bytes: l
+SENT 1 bytes: s
+SENT 1 bytes: 
+RECEIVED 114 bytes: Makefile
+P1B_check.sh
+README
+file.txt
+lab1b-client
+lab1b-client.c
+lab1b-client.dSYM
+lab1b-server
+lab1b-ser
+RECEIVED 26 bytes: ver.c
+lab1b-server.dSYM
+
+SENT 1 bytes: e
+SENT 1 bytes: c
+SENT 1 bytes: h
+SENT 1 bytes: o
+SENT 1 bytes:  
+SENT 1 bytes: "
+SENT 1 bytes: 1
+SENT 1 bytes: 0
+SENT 1 bytes: 0
+SENT 1 bytes: "
+SENT 1 bytes: 
+RECEIVED 2 bytes: 10
+RECEIVED 3 bytes: 0
+
+SENT 1 bytes: 
+RECEIVED 0 bytes: 

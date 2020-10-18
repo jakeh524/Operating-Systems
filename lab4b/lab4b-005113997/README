@@ -1,0 +1,8 @@
+NAME: Jake Herron
+EMAIL: jakeh524@gmail.com
+ID: 005113997
+
+File Descriptions:
+lab4b.c is the C source module that contains all the code for the program than utilizes the SEED temperature sensor and button sensor along with a Beaglebone board to create this program. It takes options like --period, --scale, and --log to change the period of measurement taking, the temperature scale, and the place to log the data. It is also able to take commands from the keyboard to change the program's behavior like START, STOP, PERIOD=, SCALE=, and OFF.
+Makefile is the file used to build the program. It has the default target, clean target, dist target, and check target.
+README is this file which contains the descriptions of the files for this submission.

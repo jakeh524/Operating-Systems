@@ -1,0 +1,36 @@
+NAME: Jake Herron
+EMAIL: jakeh524@gmail.com
+ID: 005113997
+
+File Descriptions:
+
+
+Questions:
+
+Question 2.3.1
+
+Where do you believe most of the cycles are spent in the 1 and 2-thread list tests ?
+
+Why do you believe these to be the most expensive parts of the code?
+
+Where do you believe most of the time/cycles are being spent in the high-thread spin-lock tests?
+
+Where do you believe most of the time/cycles are being spent in the high-thread mutex tests?
+
+Question 2.3.2
+
+Where (what lines of code) are consuming most of the cycles when the spin-lock version of the list exerciser is run with a large number of threads?
+
+Why does this operation become so expensive with large numbers of threads?
+
+Question 2.3.3
+
+Look at the average time per operation (vs. # threads) and the average wait-for-mutex time (vs. #threads).
+
+Why does the average lock-wait time rise so dramatically with the number of contending threads?
+
+Why does the completion time per operation rise (less dramatically) with the number of contending threads?
+
+How is it possible for the wait time per operation to go up faster (or higher) than the completion time per operation?
+
+

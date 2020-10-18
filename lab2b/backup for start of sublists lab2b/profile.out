@@ -1,0 +1,367 @@
+Total: 670 samples
+     528  78.8%  78.8%      670 100.0% list_thread_func
+      63   9.4%  88.2%       63   9.4% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:165
+      16   2.4%  90.6%       73  10.9% SortedList_insert
+      14   2.1%  92.7%       14   2.1% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:1721
+       8   1.2%  93.9%        8   1.2% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:1720
+       6   0.9%  94.8%        6   0.9% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:205
+       6   0.9%  95.7%        6   0.9% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:1729
+       6   0.9%  96.6%        6   0.9% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:1730
+       6   0.9%  97.5%       69  10.3% SortedList_lookup
+       3   0.4%  97.9%        3   0.4% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:130
+       3   0.4%  98.4%        3   0.4% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:202
+       3   0.4%  98.8%        3   0.4% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:203
+       3   0.4%  99.3%        3   0.4% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:1714
+       2   0.3%  99.6%        2   0.3% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:134
+       2   0.3%  99.9%        2   0.3% _init
+       1   0.1% 100.0%        1   0.1% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:204
+       0   0.0% 100.0%      670 100.0% ?? /usr/src/debug////////glibc-2.17-c758a686/misc/../sysdeps/unix/sysv/linux/x86_64/clone.S:111
+       0   0.0% 100.0%      670 100.0% start_thread
+ROUTINE ====================== list_thread_func in /u/cs/ugrad/herron/CS111/lab2b/lab2_list.c
+   528    670 Total samples (flat / cumulative)
+     .      .  317:     }
+     .      .  318:     return_key[4] = '\0';
+     .      .  319:     return(return_key);
+     .      .  320: }
+     .      .  321: 
+---
+     .      .  322: void* list_thread_func(void* arg) {
+     .      .  323:     struct thread_info *this_thread_info = (struct thread_info*)arg;
+     .      .  324:     int elements_num = threads_num * iterations_num;
+     .      .  325:     if(sync_option == 'x')
+     .      .  326:     {
+     .      .  327:         int i;
+     .      .  328:         for(i = this_thread_info->index_of_thread; i < elements_num; )
+     .      .  329:         {
+     .      .  330:             SortedList_insert(head, &list[i]);
+     .      .  331:             i += threads_num;
+     .      .  332:         }
+     .      .  333:         int list_len = SortedList_length(head);
+     .      .  334:         if(list_len == -1)
+     .      .  335:         {
+     .      .  336:             fprintf(stderr, "Corrupted list. Found in length function.\n");
+     .      .  337:             exit(2);
+     .      .  338:         }
+     .      .  339:         for(i = this_thread_info->index_of_thread; i < elements_num; )
+     .      .  340:         {
+     .      .  341:             SortedListElement_t *lookup = SortedList_lookup(head, list[i].key);
+     .      .  342:             if(lookup == NULL)
+     .      .  343:             {
+     .      .  344:                 fprintf(stderr, "Corrupted list. Inserted element not found in lookup function.\n");
+     .      .  345:                 exit(2);
+     .      .  346:             }
+     .      .  347:             int delete_error = SortedList_delete(lookup);
+     .      .  348:             if(delete_error == 1)
+     .      .  349:             {
+     .      .  350:                 fprintf(stderr, "Corrupted list found in delete function.\n");
+     .      .  351:                 exit(2);
+     .      .  352:             }
+     .      .  353:             i += threads_num;
+     .      .  354:         }
+     .      .  355:         pthread_exit(NULL);
+     .      .  356:     }
+     .      .  357:     
+     .      .  358:     else if(sync_option == 'm')
+     .      .  359:     {
+     .      .  360:         int i;
+     .      .  361:         for(i = this_thread_info->index_of_thread; i < elements_num; )
+     .      .  362:         {
+     .      .  363:             int lock_error = pthread_mutex_lock(&mymutex);
+     .      .  364:             if(lock_error != 0)
+     .      .  365:             {
+     .      .  366:                 fprintf(stderr, "Error on pthread_mutex_lock system call.\n");
+     .      .  367:                 exit(1);
+     .      .  368:             }
+     .      .  369:             
+     .      .  370:             SortedList_insert(head, &list[i]);
+     .      .  371:             
+     .      .  372:             int unlock_error = pthread_mutex_unlock(&mymutex);
+     .      .  373:             if(unlock_error != 0)
+     .      .  374:             {
+     .      .  375:                 fprintf(stderr, "Error on pthread_mutex_unlock system call.\n");
+     .      .  376:                 exit(1);
+     .      .  377:             }
+     .      .  378:             i += threads_num;
+     .      .  379:         }
+     .      .  380:         int lock_error = pthread_mutex_lock(&mymutex);
+     .      .  381:         if(lock_error != 0)
+     .      .  382:         {
+     .      .  383:             fprintf(stderr, "Error on pthread_mutex_lock system call.\n");
+     .      .  384:             exit(1);
+     .      .  385:         }
+     .      .  386:         
+     .      .  387:         
+     .      .  388:         int list_len = SortedList_length(head);
+     .      .  389:         if(list_len < 0)
+     .      .  390:         {
+     .      .  391:             fprintf(stderr, "Corrupted list. Found in length function.\n");
+     .      .  392:             exit(2);
+     .      .  393:         }
+     .      .  394:         
+     .      .  395:         int unlock_error = pthread_mutex_unlock(&mymutex);
+     .      .  396:         if(unlock_error != 0)
+     .      .  397:         {
+     .      .  398:             fprintf(stderr, "Error on pthread_mutex_unlock system call.\n");
+     .      .  399:             exit(1);
+     .      .  400:         }
+     .      .  401: 
+     .      .  402:         for(i = this_thread_info->index_of_thread; i < elements_num; )
+     .      .  403:         {
+     .      .  404:             int lock_error = pthread_mutex_lock(&mymutex);
+     .      .  405:             if(lock_error != 0)
+     .      .  406:             {
+     .      .  407:                 fprintf(stderr, "Error on pthread_mutex_lock system call.\n");
+     .      .  408:                 exit(1);
+     .      .  409:             }
+     .      .  410:             
+     .      .  411:             SortedListElement_t *lookup = SortedList_lookup(head, list[i].key);
+     .      .  412:             if(lookup == NULL)
+     .      .  413:             {
+     .      .  414:                 fprintf(stderr, "Corrupted list. Inserted element not found in lookup function.\n");
+     .      .  415:                 exit(2);
+     .      .  416:             }
+     .      .  417:             int delete_error = SortedList_delete(lookup);
+     .      .  418:             if(delete_error == 1)
+     .      .  419:             {
+     .      .  420:                 fprintf(stderr, "Corrupted list found in delete function.\n");
+     .      .  421:                 exit(2);
+     .      .  422:             }
+     .      .  423:             
+     .      .  424:             int unlock_error = pthread_mutex_unlock(&mymutex);
+     .      .  425:             if(unlock_error != 0)
+     .      .  426:             {
+     .      .  427:                 fprintf(stderr, "Error on pthread_mutex_unlock system call.\n");
+     .      .  428:                 exit(1);
+     .      .  429:             }
+     .      .  430:             i += threads_num;
+     .      .  431:         }
+     .      .  432:         pthread_exit(NULL);
+     .      .  433:     }
+     .      .  434:     
+     .      .  435:     else if(sync_option == 's')
+     .      .  436:     {
+     .      .  437:         int i;
+     .      .  438:         for(i = this_thread_info->index_of_thread; i < elements_num; )
+     .      .  439:         {
+   335    335  440:             while(__sync_lock_test_and_set(&spin_lock, 1));
+     .      .  441:             
+     1     74  442:             SortedList_insert(head, &list[i]);
+     .      .  443:             
+     .      .  444:             __sync_lock_release(&spin_lock);
+     .      .  445:             i += threads_num;
+     .      .  446:         }
+     .      .  447:         
+     .      .  448:         while(__sync_lock_test_and_set(&spin_lock, 1));
+     .      .  449:         
+     .      .  450:         int list_len = SortedList_length(head);
+     .      .  451:         if(list_len < 0)
+     .      .  452:         {
+     .      .  453:             fprintf(stderr, "Corrupted list. Found in length function.\n");
+     .      .  454:             exit(2);
+     .      .  455:         }
+     .      .  456:         
+     .      .  457:         __sync_lock_release(&spin_lock);
+     .      .  458: 
+     .      .  459:         for(i = this_thread_info->index_of_thread; i < elements_num; )
+     .      .  460:         {
+   192    192  461:             while(__sync_lock_test_and_set(&spin_lock, 1));
+     .      .  462:             
+     .     69  463:             SortedListElement_t *lookup = SortedList_lookup(head, list[i].key);
+     .      .  464:             if(lookup == NULL)
+     .      .  465:             {
+     .      .  466:                 fprintf(stderr, "Corrupted list. Inserted element not found in lookup function.\n");
+     .      .  467:                 exit(2);
+     .      .  468:             }
+     .      .  469:             int delete_error = SortedList_delete(lookup);
+     .      .  470:             if(delete_error == 1)
+     .      .  471:             {
+     .      .  472:                 fprintf(stderr, "Corrupted list found in delete function.\n");
+     .      .  473:                 exit(2);
+     .      .  474:             }
+     .      .  475:             
+     .      .  476:             __sync_lock_release(&spin_lock);
+     .      .  477:             i += threads_num;
+     .      .  478:         }
+     .      .  479:         pthread_exit(NULL);
+     .      .  480:     }
+     .      .  481:     pthread_exit(NULL);
+---
+     .      .  482: }
+     .      .  483: 
+     .      .  484: void segfault_handler()
+     .      .  485: {
+     .      .  486:     write(2, "Segmentation Fault detected.\n", 29);
+ROUTINE ====================== list_thread_func in /u/cs/ugrad/herron/CS111/lab2b/lab2_list.c
+   528    670 Total samples (flat / cumulative)
+     .      .  317:     }
+     .      .  318:     return_key[4] = '\0';
+     .      .  319:     return(return_key);
+     .      .  320: }
+     .      .  321: 
+---
+     .      .  322: void* list_thread_func(void* arg) {
+     .      .  323:     struct thread_info *this_thread_info = (struct thread_info*)arg;
+     .      .  324:     int elements_num = threads_num * iterations_num;
+     .      .  325:     if(sync_option == 'x')
+     .      .  326:     {
+     .      .  327:         int i;
+     .      .  328:         for(i = this_thread_info->index_of_thread; i < elements_num; )
+     .      .  329:         {
+     .      .  330:             SortedList_insert(head, &list[i]);
+     .      .  331:             i += threads_num;
+     .      .  332:         }
+     .      .  333:         int list_len = SortedList_length(head);
+     .      .  334:         if(list_len == -1)
+     .      .  335:         {
+     .      .  336:             fprintf(stderr, "Corrupted list. Found in length function.\n");
+     .      .  337:             exit(2);
+     .      .  338:         }
+     .      .  339:         for(i = this_thread_info->index_of_thread; i < elements_num; )
+     .      .  340:         {
+     .      .  341:             SortedListElement_t *lookup = SortedList_lookup(head, list[i].key);
+     .      .  342:             if(lookup == NULL)
+     .      .  343:             {
+     .      .  344:                 fprintf(stderr, "Corrupted list. Inserted element not found in lookup function.\n");
+     .      .  345:                 exit(2);
+     .      .  346:             }
+     .      .  347:             int delete_error = SortedList_delete(lookup);
+     .      .  348:             if(delete_error == 1)
+     .      .  349:             {
+     .      .  350:                 fprintf(stderr, "Corrupted list found in delete function.\n");
+     .      .  351:                 exit(2);
+     .      .  352:             }
+     .      .  353:             i += threads_num;
+     .      .  354:         }
+     .      .  355:         pthread_exit(NULL);
+     .      .  356:     }
+     .      .  357:     
+     .      .  358:     else if(sync_option == 'm')
+     .      .  359:     {
+     .      .  360:         int i;
+     .      .  361:         for(i = this_thread_info->index_of_thread; i < elements_num; )
+     .      .  362:         {
+     .      .  363:             int lock_error = pthread_mutex_lock(&mymutex);
+     .      .  364:             if(lock_error != 0)
+     .      .  365:             {
+     .      .  366:                 fprintf(stderr, "Error on pthread_mutex_lock system call.\n");
+     .      .  367:                 exit(1);
+     .      .  368:             }
+     .      .  369:             
+     .      .  370:             SortedList_insert(head, &list[i]);
+     .      .  371:             
+     .      .  372:             int unlock_error = pthread_mutex_unlock(&mymutex);
+     .      .  373:             if(unlock_error != 0)
+     .      .  374:             {
+     .      .  375:                 fprintf(stderr, "Error on pthread_mutex_unlock system call.\n");
+     .      .  376:                 exit(1);
+     .      .  377:             }
+     .      .  378:             i += threads_num;
+     .      .  379:         }
+     .      .  380:         int lock_error = pthread_mutex_lock(&mymutex);
+     .      .  381:         if(lock_error != 0)
+     .      .  382:         {
+     .      .  383:             fprintf(stderr, "Error on pthread_mutex_lock system call.\n");
+     .      .  384:             exit(1);
+     .      .  385:         }
+     .      .  386:         
+     .      .  387:         
+     .      .  388:         int list_len = SortedList_length(head);
+     .      .  389:         if(list_len < 0)
+     .      .  390:         {
+     .      .  391:             fprintf(stderr, "Corrupted list. Found in length function.\n");
+     .      .  392:             exit(2);
+     .      .  393:         }
+     .      .  394:         
+     .      .  395:         int unlock_error = pthread_mutex_unlock(&mymutex);
+     .      .  396:         if(unlock_error != 0)
+     .      .  397:         {
+     .      .  398:             fprintf(stderr, "Error on pthread_mutex_unlock system call.\n");
+     .      .  399:             exit(1);
+     .      .  400:         }
+     .      .  401: 
+     .      .  402:         for(i = this_thread_info->index_of_thread; i < elements_num; )
+     .      .  403:         {
+     .      .  404:             int lock_error = pthread_mutex_lock(&mymutex);
+     .      .  405:             if(lock_error != 0)
+     .      .  406:             {
+     .      .  407:                 fprintf(stderr, "Error on pthread_mutex_lock system call.\n");
+     .      .  408:                 exit(1);
+     .      .  409:             }
+     .      .  410:             
+     .      .  411:             SortedListElement_t *lookup = SortedList_lookup(head, list[i].key);
+     .      .  412:             if(lookup == NULL)
+     .      .  413:             {
+     .      .  414:                 fprintf(stderr, "Corrupted list. Inserted element not found in lookup function.\n");
+     .      .  415:                 exit(2);
+     .      .  416:             }
+     .      .  417:             int delete_error = SortedList_delete(lookup);
+     .      .  418:             if(delete_error == 1)
+     .      .  419:             {
+     .      .  420:                 fprintf(stderr, "Corrupted list found in delete function.\n");
+     .      .  421:                 exit(2);
+     .      .  422:             }
+     .      .  423:             
+     .      .  424:             int unlock_error = pthread_mutex_unlock(&mymutex);
+     .      .  425:             if(unlock_error != 0)
+     .      .  426:             {
+     .      .  427:                 fprintf(stderr, "Error on pthread_mutex_unlock system call.\n");
+     .      .  428:                 exit(1);
+     .      .  429:             }
+     .      .  430:             i += threads_num;
+     .      .  431:         }
+     .      .  432:         pthread_exit(NULL);
+     .      .  433:     }
+     .      .  434:     
+     .      .  435:     else if(sync_option == 's')
+     .      .  436:     {
+     .      .  437:         int i;
+     .      .  438:         for(i = this_thread_info->index_of_thread; i < elements_num; )
+     .      .  439:         {
+   335    335  440:             while(__sync_lock_test_and_set(&spin_lock, 1));
+     .      .  441:             
+     1     74  442:             SortedList_insert(head, &list[i]);
+     .      .  443:             
+     .      .  444:             __sync_lock_release(&spin_lock);
+     .      .  445:             i += threads_num;
+     .      .  446:         }
+     .      .  447:         
+     .      .  448:         while(__sync_lock_test_and_set(&spin_lock, 1));
+     .      .  449:         
+     .      .  450:         int list_len = SortedList_length(head);
+     .      .  451:         if(list_len < 0)
+     .      .  452:         {
+     .      .  453:             fprintf(stderr, "Corrupted list. Found in length function.\n");
+     .      .  454:             exit(2);
+     .      .  455:         }
+     .      .  456:         
+     .      .  457:         __sync_lock_release(&spin_lock);
+     .      .  458: 
+     .      .  459:         for(i = this_thread_info->index_of_thread; i < elements_num; )
+     .      .  460:         {
+   192    192  461:             while(__sync_lock_test_and_set(&spin_lock, 1));
+     .      .  462:             
+     .     69  463:             SortedListElement_t *lookup = SortedList_lookup(head, list[i].key);
+     .      .  464:             if(lookup == NULL)
+     .      .  465:             {
+     .      .  466:                 fprintf(stderr, "Corrupted list. Inserted element not found in lookup function.\n");
+     .      .  467:                 exit(2);
+     .      .  468:             }
+     .      .  469:             int delete_error = SortedList_delete(lookup);
+     .      .  470:             if(delete_error == 1)
+     .      .  471:             {
+     .      .  472:                 fprintf(stderr, "Corrupted list found in delete function.\n");
+     .      .  473:                 exit(2);
+     .      .  474:             }
+     .      .  475:             
+     .      .  476:             __sync_lock_release(&spin_lock);
+     .      .  477:             i += threads_num;
+     .      .  478:         }
+     .      .  479:         pthread_exit(NULL);
+     .      .  480:     }
+     .      .  481:     pthread_exit(NULL);
+---
+     .      .  482: }
+     .      .  483: 
+     .      .  484: void segfault_handler()
+     .      .  485: {
+     .      .  486:     write(2, "Segmentation Fault detected.\n", 29);

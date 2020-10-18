@@ -1,0 +1,86 @@
+NAME: Jake Herron
+EMAIL: jakeh524@gmail.com
+ID: 005113997
+
+File Descriptions:
+lab2_add.c = the C module containing the multithreaded and synchronized program for adding and subtracting from a counter.
+SortedList.h = the header file containing the interfaces for the sorted linked list.
+SortedList.c = the C module containing the implementations for the sorted linked list.
+Makefile = builds the programs and contains different targets for this submission including: build, tests, graphs, dist, and clean.
+lab2_add.csv = contains all the data from running the different tests for the add program.
+lab2_list.csv = contains all the data from running the different tests for the list program.
+lab2_add-1.png = the graph showing threads and iterations to make a failure.
+lab2_add-2.png = the graph showing average time per operation with and without yields.
+lab2_add-3.png = the graph showing average time per operation verse number of iterations.
+lab2_add-4.png = the graph showing the threads and iterations that succeed with yields with each sync option.
+lab2_add-5.png = the graph showing average time per protected operation versus number of threads.
+lab2_list-1.png = average time per operation versus number of iterations.
+lab2_list-2.png = threads and iterations to make a failure.
+lab2_list-3.png = iterations that run protected with no failure.
+lab2_list-4.png = cost per operation versus number of threads for each sync option.
+README = this file containing the file descriptions and answers to all the questions.
+lab2_add.gp = makes the graphs for the add
+lab2_list.gp = makes the graphs for the list
+
+
+Question 2.1.1:
+Why does it take many iterations before errors are seen?
+    It takes a lot of iterations for errors to be seen because with a small number of iterations, there are less opportunities for race conditions and errors to occur. Once you have more iterations, there are more possible times for the additions and subtractions for the shared variable to not update correctly between threads.
+Why does a significantly smaller number of iterations so seldom fail?
+    A significantly smaller number of iterations does not fail as often because there are less opportunities for the race condition to actually occur and take effect. The program is finished running by the time a race condition and an error in updating the shared variable would occur.
+    
+
+Question 2.1.2:
+Why are the --yield runs so much slower?
+    The yield runs are so much slower because calling sched_yield causes many more context switches than would be present if we didn't call it. This will make the system slower because it has to save and restore data all the time. It forces us to release the CPU and then put it into the queue for it to wait.
+Where is the additional time going?
+    This time is going to the context switches because the Operating System has to switch from user mode to kernel mode to handle the sched_yield call and then switch back to user mode. This takes a lot of time to switch between the basic and privileged modes.
+Is it possible to get valid per-operation timings if we are using the --yield option?
+    No it is not possible to get accurate per-operation timings when we use the --yield option.
+If so, explain how. If not, explain why not.
+    It is not possible because we would need to know the time for a context-switch which would be hard to calculate because we have multiple threads running at the same time. The way we calculate now would not work because we are simply taking the total time and dividing it by the total operations. We don't know how many operations sched_yield uses on a regular basis.
+
+
+Question 2.1.3:
+Why does the average cost per operation drop with increasing iterations?
+    We spend more time actually creating the threads in pthread_create when we have a small number of iterations. The time to create the threads is a lot less than the time doing actual calculations in the for loops. Once we have more iterations, we will be forced to perform more operations in the for loop, which are cheaper than the operations to create the threads.
+    
+If the cost per iteration is a function of the number of iterations, how do we know how many iterations to run (or what the "correct" cost is)?
+    Once we add a high enough number of iterations, the cost to create the threads would ultimately be miniscule in comparison. Because of this, we know that this function will converge somewhere. The cost of creating the threads won't be significant once we reach this point where the function converges.
+
+
+Question 2.1.4:
+Why do all of the options perform similarly for low numbers of threads?
+    Race conditions are a lot less common when we have a low number of threads, so it doesn't matter which option you choose because their difference won't be highlighted very often. The threads also won't compete for the lock as much when we have a low number of threads which also makes all the options pretty similar.
+
+Why do the three protected operations slow down as the number of threads rises?
+    The frequency at which race conditions and threads competing for locks occur is a lot higher when we have a lot more threads. Because of this, the locks will be engaged and used more often in order to protect the data and avoid race conditions which will then slow down the program because using the locks is very expensive.
+    
+    
+    
+Question 2.2.1:
+    Compare the variation in time per mutex-protected operation vs the number of threads in Part-1 (adds) and Part-2 (sorted lists).
+    The add mutex graph starts off low and then increases as the number of threads increase. Once it reaches a certain point, however, the cost seems to level out. This is due to the fact that add operations are very cheap and using mutexes is expensive due to the large amount of context switches. Additionally, the overhead of creating the threads is large until you reach a big enough number of threads for it to be worth it in terms of maximizing efficiency of the operations.
+    The list mutex graph is pretty flat throughout and is not increasing as the number of threads increases. This is because the cost to do all 3 operations on the list is a lot more expensive than doing one addition operation so multithreading it and using mutexes is worth it even with a small number of threads. The overhead to create the threads and the cost of the context switches of the mutexes are worth it when doing the list operations.
+    
+    
+    Comment on the general shapes of the curves, and explain why they have this shape.
+    The curve of the list graph is generally flat due to the fact that using mutexes on a multithreaded linked list program is worth the extra overhead of creating the threads and context switching with mutexes. The curve of the addition graph starts off with a positive slope and then eventually flattens out because using multithreading and mutexes on a simple addition program is pretty expensive when you factor in the overhead and compare it to the cheapness of addition.
+    
+    
+    Comment on the relative rates of increase and differences in the shapes of the curves, and offer an explanation for these differences.
+    The addition curve is positive and increases faster in the addition graph because it has to account for the overhead of the mutexes and the thread creation so at a small number of threads, multithreading is not worth it for addition. The linked list curve remains pretty much flat throughout because using multithreading for all 3 of these linked list additions is more efficient and worthwhile because these operations are more complicated and expensive compared to the overhead.
+    
+    
+Question 2.2.2:
+    Compare the variation in time per protected operation vs the number of threads for list operations protected by Mutex vs Spin locks. Comment on the general shapes of the curves, and explain why they have this shape.
+    The cost of the spin lock keeps increasing as you increase the number of threads, while the cost of the mutexes starts to plateau and flatten out as the number of threads increase. This is because the spin lock will be doing a lot of waiting when there are a lot of threads which will cost CPU operations. There are a lot of threads competing for this one spin lock so while one is performing the others are stuck waiting and wasting cycles. The mutex flattens out because even though there are a lot of threads competing for this resource, the threads not performing will be blocked by the OS until the mutex is released and they are ready to perform so they are not wasting CPU cyles and operations.
+    
+    
+    Comment on the relative rates of increase and differences in the shapes of the curves, and offer an explanation for these differences.
+    The rate of increase for the mutex is lower than that of the spin lock due to the fact that the spin lock is using more operations, especially when you increase the number of threads. The threads not performing on the linked list are still using CPU cylces spinning in the spin lock whereas the mutex threads that are not performing are simply blocked waiting for the resource to be relinquished.
+    
+    
+
+
+

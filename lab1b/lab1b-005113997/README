@@ -1,0 +1,9 @@
+NAME: Jake Herron
+EMAIL: jakeh524@gmail.com
+ID: 005113997
+
+This submission contains first the README file which is this file that describes the contents of the submission. Then it contains the Makefile which is resposible for building the server and client executables. It also cleans them up and makes the distribution for submission. The lab1b-client.c file is the C source code for the client side of this project. It connects to the socket using a variety of calls and then is able to send input and commands to the server and receive output. It has --log and --compress arguments to store what goes through the socket and compress data respectively. Finally, this submission contains the lab1b-server.c file which is the C source code for the server side of the project. It connects ot the socket using similar calls and then forks to create a shell and pipes input and output back and forth between the terminal and the shell. It receives input from the client and then passes this to the shell which executes it and then it comes back to the server and goes back to the client through the socket. This C code takes --compress arguments to compress the data.
+
+The sanity script for this project kept hanging for me when it got to testing trivial shell session. My project seems to work when I test it myself but the script gets stuck. :/
+
+My project does all the things that the grading says it should do so hopefully the script doesn't screw me up. Thank you!

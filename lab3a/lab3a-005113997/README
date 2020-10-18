@@ -1,0 +1,9 @@
+NAME: Jake Herron
+EMAIL: jakeh524@gmail.com
+ID: 005113997
+
+File Descriptions:
+lab3a.cpp is the C source file that contains the code to parse and summarize an EXT2 file system. It takes in one argument which is the EXT2 file system image to be analyzed.
+ext2_fs.h contains the standard structures and macros used for EXT2 file systems. It was provided in the spec.
+Makefile contains the build commands and rules to build the program. It has a default target, clean target, and dist target.
+README is this file which contains the author's details and the file descriptions.

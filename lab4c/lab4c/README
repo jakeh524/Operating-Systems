@@ -1,0 +1,9 @@
+NAME: Jake Herron
+EMAIL: jakeh524@gmail.com
+ID: 005113997
+
+File Descriptions:
+lab4c_tcp.c is the C source file that is able to communicate with a TCP logging server for a Beaglebone temperature sensor. It has parameters id, host, log, port, scale, and period.
+lab4c_tls.c is the C source file that is able to communicate with a secure TLS logging server through SSL for a Beaglebone temperature sensor.
+Makefile is the file used to build the two programs, clean them, and make the distribution.
+README is this file with author info and file descriptions.
